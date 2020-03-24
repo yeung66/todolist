@@ -3,13 +3,37 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
-    {% if not known %}
-    <p>Pleased to meet you!</p>
+    <h1>Hello, {% if username %}{{ username }}{% else %}Stranger{% endif %}!</h1>
+    {% if not username %}
+    <p>使用前请先登录或注册</p>
+    {{ wtf.quick_form(form,url_for('user_admin')) }}
     {% else %}
-    <p>Happy to see you again!</p>
+    <p>欢迎使用待办事项</p>
     {% endif %}
 </div>
-{{ wtf.quick_form(form,url_for('user_admin')) }}
+
+<div class="container">
+<div class="panel-body">
+    {% for task in tasks %}
+
+    <div class="alert alert-{% if task.finished %}success{% else %}info
+    {% endif %}">
+        <div class="row">
+        <div class="col-md-10"> {{ task.content }}</div>
+        <div class="col-md-2 ">
+            {% if task.finished %}
+            <a  class="btn btn-success pull-right" disabled>已完成</a>
+                {% else %}
+                <a  class="btn btn-primary pull-right" href="{{ url_for('done',id=task.id) }}">完成</a>
+            {% endif %}
+
+            <a  class="btn btn-danger pull-right" href="{{ url_for('delete',id=task.id) }}">删除</a>
+        </div>
+        </div>
+    </div>
+                {% endfor %}
+            </div>
+</div>
+
 
 {% endblock %}
