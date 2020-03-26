@@ -8,31 +8,46 @@
     <p>使用前请先登录或注册</p>
     {{ wtf.quick_form(form,url_for('user_admin')) }}
     {% else %}
-    <p>欢迎使用待办事项</p>
+    <div class="container">
+        <div class="row">
+
+{#  <div class="col">#}
+{#      <form action="{{url_for('add_task')}}" method="post">#}
+{#    <div class="input-group">#}
+{#      <input type="text" class="form-control" placeholder="Things To Do！" name="content">#}
+{#      <span class="input-group-btn">#}
+{#        <button class="btn btn-default" type="submit">添加待办事项</button>#}
+{#      </span>#}
+{#    </div><!-- /input-group -->#}
+{#  </div><!-- /.col-lg-6 -->#}
+</div><!-- /.row -->
+    </form>
+    </div>
     {% endif %}
 </div>
 
 <div class="container">
-<div class="panel-body">
-    {% for task in tasks %}
 
-    <div class="alert alert-{% if task.finished %}success{% else %}info
-    {% endif %}">
-        <div class="row">
-        <div class="col-md-10"> {{ task.content }}</div>
-        <div class="col-md-2 ">
-            {% if task.finished %}
-            <a  class="btn btn-success pull-right" disabled>已完成</a>
-                {% else %}
-                <a  class="btn btn-primary pull-right" href="{{ url_for('done',id=task.id) }}">完成</a>
-            {% endif %}
+    <div class="panel-body">
 
-            <a  class="btn btn-danger pull-right" href="{{ url_for('delete',id=task.id) }}">删除</a>
-        </div>
-        </div>
-    </div>
-                {% endfor %}
+        {% for task in tasks %}
+
+        <div class="alert alert-{% if task.finished %}success{% else %}info{% endif %}">
+            <div class="row">
+                <div class="col-md-10"> {{ task.content }}</div>
+                <div class="col-md-2 ">
+                    {% if task.finished %}
+                        <a  class="btn btn-success pull-right" disabled>已完成</a>
+                    {% else %}
+                        <a  class="btn btn-primary pull-right" href="{{ url_for('done',id=task.id) }}">完成</a>
+                    {% endif %}
+
+                        <a  class="btn btn-danger pull-right" href="{{ url_for('delete',id=task.id) }}">删除</a>
+                </div>
             </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 

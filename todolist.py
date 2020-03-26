@@ -40,22 +40,22 @@ class Task(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(30), db.ForeignKey('users.username'))
     content = db.Column(db.String(50))
-    finished = db.Column(db.BOOLEAN)
+    finished = db.Column(db.BOOLEAN, default=False)
 
     def __repr__(self):
         return '<Task %s>' % self.content
 
 
 class UserForm(FlaskForm):
-    username = StringField('用户名', [DataRequired()], description='Please input your username!')
-    password = PasswordField('密码', [DataRequired()], description='Please input your password!')
+    username = StringField('用户名', [DataRequired()])
+    password = PasswordField('密码', [DataRequired()])
     login = SubmitField('登录', id='login')
     signup = SubmitField('注册', id='signup')
 
 
 @app.route('/')
 def index():
-    if session['user'] is not None:
+    if 'user' in session:
         user = User.query.get(session['user'])
         tasks = user.tasks
         return render_template('index.html', username=user.username, tasks=tasks)
@@ -91,20 +91,27 @@ def user_admin():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    session.pop('password', None)
-    return redirect(url_for('hello_world'))
+    session.pop('user', None)
+    # session.pop('password', None)
+    return redirect(url_for('index'))
 
 
 @app.route('/addTask', methods=['POST'])
 def add_task():
-    n = session.get('username')
-    if n is None: return "请先登录！"
-    c = request.form['content']
-    new_task = Task(username=n, content=c, finished=False)
-    db.session.add(new_task)
-    db.session.commit()
-    return redirect(url_for('hello_world'))
+    msg = None
+
+    if 'user' not in session:
+        msg = '请先登录再添加任务！'
+    elif not User.query.get(session['user']):
+        msg = '用户不存在！请重新登录'
+        session.pop('user')
+    else:
+        task_name = request.form['content']
+        task = Task(content=task_name, username=session['user'])
+        db.session.add(task)
+        db.session.commit()
+        msg = '添加任务成功！'
+    return redirect(url_for('index'))
 
 
 @app.route('/done/<id>')
@@ -112,7 +119,7 @@ def done(id):
     # id = request.form['id']
     task = Task.query.get(id)
     # msg = None
-    if task and session['user'] and session['user'] == task.username:
+    if task and 'user' in session and session['user'] == task.username:
         task.finished = True
         db.session.commit()
     return redirect(url_for('index'))
@@ -121,7 +128,7 @@ def done(id):
 @app.route('/del/<id>')
 def delete(id):
     task = Task.query.get(id)
-    if task and session['user'] and session['user'] == task.username:
+    if task and 'user' in session and session['user'] == task.username:
         db.session.delete(task)
         db.session.commit()
     return redirect(url_for('index'))
