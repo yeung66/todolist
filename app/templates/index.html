@@ -6,7 +6,7 @@
     <h1>Hello, {% if username %}{{ username }}{% else %}Stranger{% endif %}!</h1>
     {% if not username %}
     <p>使用前请先登录或注册</p>
-    {{ wtf.quick_form(form,url_for('user_admin')) }}
+    {{ wtf.quick_form(form,url_for('.user_admin')) }}
     {% else %}
     <div class="container">
         <div class="row">
@@ -39,10 +39,10 @@
                     {% if task.finished %}
                         <a  class="btn btn-success pull-right" disabled>已完成</a>
                     {% else %}
-                        <a  class="btn btn-primary pull-right" href="{{ url_for('done',id=task.id) }}">完成</a>
+                        <a  class="btn btn-primary pull-right" href="{{ url_for('.done',id=task.id) }}">完成</a>
                     {% endif %}
 
-                        <a  class="btn btn-danger pull-right" href="{{ url_for('delete',id=task.id) }}">删除</a>
+                        <a  class="btn btn-danger pull-right" href="{{ url_for('.delete',id=task.id) }}">删除</a>
                 </div>
             </div>
         </div>
